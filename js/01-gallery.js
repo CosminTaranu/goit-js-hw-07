@@ -14,30 +14,28 @@ const createItemMarkUp = ({ preview, original, description }) => {
 const galleryMarkUp = galleryItems.map(createItemMarkUp).join('');
 galleryContainer.innerHTML = galleryMarkUp;
 
-const galleryImage = document.querySelectorAll(".gallery__image");
-
-galleryImage.forEach ( image => {
-    image.addEventListener ( 'click', event =>{
-        event.preventDefault();
-        const imageUrl=event.target.dateset.source;
-        console.log(imageUrl);
-    });
-});
-
-const openModal = (imageUrl) => {
-    const instance = basicLightbox.create(`
-        <img src="${imageUrl}" width="800" height="600">
-    `);
-    instance.show();
-};
-
-galleryContainer.addEventListener ('click', event =>{
+galleryContainer.addEventListener('click', (event) => {
     event.preventDefault();
-    if(!event.target.classList.contains ('gallery__image'))
-        return;
-    const imageUrl = event.target.dataset.source;
-    openModal(imageUrl);
-})
+  
+    if (event.target.nodeName !== 'IMG') {
+      return;
+    }
+  
+    const instance = basicLightbox.create(`
+      <img src="${event.target.dataset.source}" width="800" height="600">
+    `);
+  
+    instance.show();
+  
+    const onEscPress = (event) => {
+      if (event.key === 'Escape') {
+        instance.close();
+       galleryContainer.removeEventListener('keydown', onEscPress);
+      }
+    };
+  
+    galleryContainer.addEventListener('keydown', onEscPress);
+  });
 
 
 console.log(galleryItems);
